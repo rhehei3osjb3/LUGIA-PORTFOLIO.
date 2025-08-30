@@ -153,7 +153,7 @@
 
     <main class="home">
       <div class="hero">
-        <div class="tag">roblox scripting portfolio</div>
+        <div class="tag">LUGIA — Scripter</div>
         <!-- CUT / REVEAL TITLE -->
         <div class="cut-text" aria-label="A ordinary Scripter">
           <div class="top">A ordinary Scripter</div>
@@ -161,7 +161,7 @@
           <div class="slash" aria-hidden="true"></div>
         </div>
         <div class="replacement" aria-live="polite">A trustworthy scripter</div>
-        <p class="sub">Click a tile to open a full-screen showcase page. Each page auto-plays background music (toggleable) and your video with a neon-styled player.</p>
+        <p class="sub">I'm Lugia — a scripter. These are my creations. Click any tile to view the full demonstration. Music is off by default; toggle it on when you want.</p>
       </div>
 
       <!-- SHOWCASE GRID (only these labels) -->
@@ -189,12 +189,12 @@
     </section>
 
     <footer>
-      <div class="credit">© <span id="year"></span> Lugia / Luminous — Neon portfolio. Music placeholder: “Warriyo”. Ensure you have rights and upload your own <code>warriyo.mp3</code> to this repo.</div>
+      <div class="credit">Made by LUGIA</div>
     </footer>
   </div>
 
-  <!-- Background music (replace warriyo.mp3 with your own file placed in the repo root) -->
-  <audio id="bgm" src="warriyo.mp3" loop preload="none"></audio>
+  <!-- Background music: Warriyo (NCS) -->
+  <audio id="bgm" src="warriyo-ncs.mp3" loop preload="none"></audio>
 
   <script>
     const fileMap = {
@@ -268,8 +268,14 @@
         view.classList.add('active');
         view.setAttribute('aria-hidden','false');
         titleEl.textContent = labels[slug] || slug.replace(/-/g,' ');
-        videoEl.src = encodeURI(file);
-        videoEl.currentTime = 0;
+        videoEl.pause();
+        videoEl.removeAttribute('src');
+        videoEl.innerHTML = '';
+        const srcEl = document.createElement('source');
+        srcEl.src = new URL(file, location.href).href;
+        srcEl.type = 'video/mp4';
+        videoEl.appendChild(srcEl);
+        videoEl.load();
         setTimeout(()=> videoEl.play().catch(()=>{}), 60);
         ensureMusic();
       } else {
@@ -282,7 +288,7 @@
     }
 
     // Music controls
-    let musicWanted = true;
+    let musicWanted = false;
     function ensureMusic(){
       bgm.volume = parseFloat(vol.value || '0.35');
       toggleBtn.textContent = `Music: ${musicWanted? 'On':'Off'}`;
