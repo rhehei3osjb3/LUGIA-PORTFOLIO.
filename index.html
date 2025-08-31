@@ -1,202 +1,171 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>A trustworthy scripter — Neon Showcase</title>
-  <meta name="description" content="A neon-styled interactive showcase of scripting work: interface, NPC, admin commands, hatching system, inventory." />
-  <meta name="theme-color" content="#0ef" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;800&family=Orbitron:wght@600;800&display=swap" rel="stylesheet">
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>LUGIA — Neon Showcase</title>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700;800&family=Orbitron:wght@600;800&display=swap" rel="stylesheet">
   <style>
     :root{
-      --bg-1:#07080b;
-      --bg-2:#0a0c12;
-      --accent:#0ef;
-      --accent-2:#ff00ff;
-      --text:#d6e2ff;
-      --muted:#8ca2c2;
-      --card-bg: rgba(255,255,255,0.06);
-      --glass: rgba(255,255,255,0.08);
-      --radius: 24px;
-      --shadow: 0 10px 30px rgba(0,0,0,.45);
-      --neon-shadow: 0 0 12px var(--accent), 0 0 32px var(--accent), 0 0 64px var(--accent);
-      --neon-shadow-2: 0 0 12px var(--accent-2), 0 0 32px var(--accent-2), 0 0 64px var(--accent-2);
+      --bg-1:#03050a; --bg-2:#07111a;
+      --accent:#00f0ff; --accent-2:#ff00d0; --glass:rgba(255,255,255,0.05);
+      --neon: 0 0 8px var(--accent), 0 0 22px rgba(0,240,255,0.12);
+      --neon2: 0 0 10px var(--accent-2), 0 0 28px rgba(255,0,208,0.08);
     }
     *{box-sizing:border-box}
-    html,body{height:100%}
-    body{
-      margin:0; font-family:Montserrat, system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, 'Helvetica Neue', Arial, 'Noto Sans', 'Apple Color Emoji','Segoe UI Emoji';
-      color:var(--text);
-      background: radial-gradient(1400px 800px at 70% -10%, rgba(0,238,255,.15), transparent 60%),
-                  radial-gradient(1000px 800px at -10% 110%, rgba(255,0,255,.12), transparent 60%),
-                  linear-gradient(180deg, var(--bg-1), var(--bg-2));
-      overflow:hidden;
-    }
-    a{color:inherit}
-    /* Background particles */
-    .stars, .grid{
-      position:fixed; inset:0; pointer-events:none; z-index:-1;
-    }
-    .stars{
-      background:
-        radial-gradient(1px 1px at 10% 20%,#fff7,transparent 40%),
-        radial-gradient(1px 1px at 30% 80%,#fff5,transparent 40%),
-        radial-gradient(1px 1px at 70% 40%,#fff8,transparent 40%),
-        radial-gradient(1px 1px at 90% 70%,#fff6,transparent 40%),
-        radial-gradient(1px 1px at 50% 50%,#fff7,transparent 40%);
-      animation: twinkle 6s ease-in-out infinite;
-      opacity:.6;
-    }
-    @keyframes twinkle{ 0%,100%{opacity:.4} 50%{opacity:.9}}
-    .grid{
-      background: linear-gradient(transparent 0 49%, rgba(255,255,255,.06) 50%, transparent 51%) 0 0/100% 40px,
-                  linear-gradient(90deg, transparent 0 49%, rgba(255,255,255,.06) 50%, transparent 51%) 0 0/40px 100%;
-      transform-origin: center; filter: drop-shadow(0 0 10px rgba(0,238,255,.25));
-      animation: drift 18s linear infinite;
-      mask-image: radial-gradient(closest-side, #000 70%, transparent 100%);
-      opacity:.35;
-    }
-    @keyframes drift { to { transform: perspective(800px) rotateX(50deg) translateY(-40px); } }
+    html,body{height:100%;margin:0;font-family:Montserrat,system-ui,Arial;background:linear-gradient(180deg,var(--bg-1),var(--bg-2));color:#e9f7ff;overflow:auto}
 
-    /* Layout */
-    .wrap{position:relative; min-height:100%; display:grid; grid-template-rows: auto 1fr auto;}
-    header, footer{padding:24px; display:flex; align-items:center; justify-content:space-between}
-    header h2{margin:0; font:800 16px/1 Orbitron, sans-serif; letter-spacing:.16em; text-transform:uppercase; color:#e7f5ff}
-    header h2 span{color:var(--accent); text-shadow:var(--neon-shadow)}
-    .brand-dot{width:10px;height:10px;border-radius:50%; background:var(--accent); box-shadow:var(--neon-shadow)}
+    /* subtle animated background */
+    .bg-grid{position:fixed;inset:0;pointer-events:none;background-image:radial-gradient(rgba(255,255,255,0.02) 1px, transparent 1px);background-size:24px 24px;opacity:.25;mix-blend-mode:overlay}
 
-    main{display:grid; place-items:center; padding:24px}
+    header{display:flex;align-items:center;justify-content:space-between;padding:18px 28px}
+    .logo{font-weight:800;font-family:Orbitron,monospace;letter-spacing:.12em}
+    .logo .glow{color:var(--accent);text-shadow:var(--neon)}
 
-    /* HERO */
-    .hero{position:relative; text-align:center; max-width:1100px; margin:24px auto 8px}
-    .hero .tag{display:inline-block; font:600 12px/1.2 Montserrat; letter-spacing:.22em; text-transform:uppercase; color:var(--muted); background:rgba(255,255,255,.06); padding:10px 14px; border-radius:999px; backdrop-filter: blur(6px); border:1px solid rgba(255,255,255,.08)}
+    main{display:flex;gap:30px;padding:18px 28px;min-height:calc(100vh - 120px)}
+    .left{flex:1;min-width:320px;display:flex;flex-direction:column;align-items:center;justify-content:flex-start;padding-top:40px}
+    .right{width:420px;position:relative;display:flex;align-items:center;justify-content:center}
 
-    .cut-text{position:relative; margin:28px auto 0; height:160px;}
-    .cut-text .top, .cut-text .bottom{position:absolute; inset:0; display:flex; align-items:center; justify-content:center; font:800 68px/1.1 Orbitron, sans-serif; letter-spacing:.06em; text-transform:none; color:#e6ffff; text-shadow:var(--neon-shadow);}
-    @media (max-width: 720px){ .cut-text{height:120px} .cut-text .top,.cut-text .bottom{font-size:38px} }
-    .cut-text .top{clip-path: inset(0 0 50% 0);}
-    .cut-text .bottom{clip-path: inset(50% 0 0 0);}
-    .cut-text .slash{position:absolute; left:5%; right:5%; top:50%; height:2px; background:linear-gradient(90deg, transparent, #fff, transparent); box-shadow:0 0 12px #fff; transform:scaleX(0); transform-origin:center;}
+    /* HERO cut text */
+    .hero{width:100%;max-width:980px;text-align:center}
+    .tag{display:inline-block;padding:8px 12px;border-radius:999px;background:linear-gradient(90deg,rgba(0,240,255,0.03),rgba(255,0,208,0.03));font-weight:700;color:#eaffff;font-size:12px;letter-spacing:.18em}
 
-    .replacement{position:relative; margin:2px auto 6px; display:flex; align-items:center; justify-content:center; font:800 74px/1 Orbitron, sans-serif; letter-spacing:.06em; text-transform:none; color:#fff; 
-      text-shadow: var(--neon-shadow-2);
-      opacity:0; translate:0 12px; filter: blur(1px);
-    }
-    @media (max-width: 720px){ .replacement{font-size:44px}}
+    .cut-text{position:relative;margin:28px auto;padding:6px 0}
+    .cut-text .full{font-family:Orbitron,monospace;font-weight:800;font-size:clamp(30px,6vw + 12px,76px);color:rgba(255,255,255,0.04);line-height:1.02}
+    .cut-text .slice{position:absolute;left:0;right:0;display:flex;align-items:center;justify-content:center;font-family:Orbitron,monospace;font-weight:800;font-size:clamp(30px,6vw + 12px,76px);line-height:1;color:#eaffff}
+    .cut-text .top{clip-path:inset(0 0 50% 0)}
+    .cut-text .bottom{clip-path:inset(50% 0 0 0)}
+    .cut-text .slash{position:absolute;left:10%;right:10%;top:50%;height:3px;background:linear-gradient(90deg,transparent,#fff,transparent);transform:scaleX(0);opacity:0}
 
-    .hero .sub{margin:10px auto 0; max-width:760px; color:var(--muted)}
+    .replacement{font-family:Orbitron,monospace;font-weight:800;font-size:clamp(34px,6.5vw + 14px,84px);margin-top:10px;opacity:0;transform:translateY(18px);text-shadow:var(--neon2);color:#fff}
 
-    /* Orchestration */
-    .animate .cut-text .slash{animation: slash 1.8s .9s cubic-bezier(.22,.9,.24,1) forwards}
-    .animate .cut-text .top{animation: sliceTop 1.6s 1.1s cubic-bezier(.16,.88,.24,1) forwards}
-    .animate .cut-text .bottom{animation: sliceBottom 1.6s 1.1s cubic-bezier(.16,.88,.24,1) forwards}
-    .animate.show-replacement .replacement{animation: appear 1.2s .2s ease-out forwards, glowPulse 3s 1.4s ease-in-out infinite}
+    .sub{max-width:780px;margin:18px auto 0;color:#9fbdd6;font-size:15px}
 
-    @keyframes slash{ 0%{transform:scaleX(0)} 18%{transform:scaleX(1)} 100%{transform:scaleX(1)} }
-    @keyframes sliceTop{ 0%{transform:translateY(0)} 35%{transform:translateY(-2px)} 100%{transform:translateY(-46px); opacity:0} }
-    @keyframes sliceBottom{ 0%{transform:translateY(0)} 35%{transform:translateY(2px)} 100%{transform:translateY(46px); opacity:0} }
-    @keyframes appear{ from{opacity:0; filter:blur(1px); translate:0 12px} to{opacity:1; filter:blur(0); translate:0 0} }
-    @keyframes glowPulse{ 0%,100%{ text-shadow: var(--neon-shadow-2)} 50%{ text-shadow: 0 0 6px var(--accent-2), 0 0 18px var(--accent-2), 0 0 28px var(--accent)} }
+    /* grid of demo cards */
+    .grid{display:grid;grid-template-columns:repeat(5,1fr);gap:14px;margin-top:26px;width:100%}
+    @media(max-width:1100px){.grid{grid-template-columns:repeat(3,1fr)}}
+    @media(max-width:720px){main{flex-direction:column} .right{width:100%} .grid{grid-template-columns:repeat(2,1fr)} .cut-text .full{font-size:clamp(22px,6vw + 6px,44px)} .cut-text .slice{font-size:clamp(22px,6vw + 6px,44px)} .replacement{font-size:44px}}
 
-    /* Cards */
-    .grid-wrap{width:100%; max-width:1080px; margin:22px auto 0; display:grid; grid-template-columns: repeat(5, minmax(0,1fr)); gap:16px}
-    @media (max-width: 1024px){ .grid-wrap{grid-template-columns: repeat(3, minmax(0,1fr));} }
-    @media (max-width: 680px){ .grid-wrap{grid-template-columns: repeat(2, minmax(0,1fr));} }
-    .card{position:relative; aspect-ratio: 4/3; border-radius: var(--radius); background:linear-gradient(180deg, rgba(255,255,255,.1), rgba(255,255,255,.04)); border:1px solid rgba(255,255,255,.12); overflow:hidden; cursor:pointer; box-shadow:var(--shadow); isolation:isolate}
-    .card::before{content:""; position:absolute; inset:-1px; background: conic-gradient(from 0deg at 50% 50%, var(--accent), transparent 30%, var(--accent-2) 50%, transparent 80%, var(--accent)); filter: blur(18px); opacity:.35; z-index:-1}
-    .card .label{position:absolute; left:14px; bottom:14px; right:14px; padding:12px 14px; border-radius:16px; background:rgba(0,0,0,.45); border:1px solid rgba(255,255,255,.14); backdrop-filter: blur(8px); font:800 16px/1.2 Orbitron, sans-serif; letter-spacing:.08em; text-transform:uppercase; text-align:center}
-    .card .shine{position:absolute; inset:0; background: radial-gradient(600px 120px at var(--mx,50%) -10%, rgba(255,255,255,.28), transparent 40%);
-      mix-blend-mode:screen; opacity:.7; transition: opacity .3s}
-    .card:hover .shine{opacity:1}
-    .card:hover{transform: translateY(-4px)}
+    /* ENHANCED CARD STYLE */
+    .card{position:relative;border-radius:16px;overflow:hidden;background:linear-gradient(180deg,rgba(255,255,255,0.02),rgba(255,255,255,0.01));border:1px solid rgba(255,255,255,0.04);cursor:pointer;aspect-ratio:16/10;display:flex;align-items:flex-end;justify-content:center;transition:transform .32s cubic-bezier(.2,.9,.2,1), box-shadow .32s;z-index:1}
+    .card::before{content:"";position:absolute;inset:-2px;background:linear-gradient(90deg,var(--accent),var(--accent-2));filter:blur(10px);opacity:0;transform:scale(.98);transition:opacity .28s, transform .28s;pointer-events:none}
+    .card::after{content:"";position:absolute;inset:0;border-radius:inherit;padding:2px;background:linear-gradient(180deg,rgba(255,255,255,0.02),transparent);mix-blend-mode:overlay;pointer-events:none}
+    .card .label{position:relative;z-index:3;background:rgba(0,0,0,0.45);padding:12px 10px;border-radius:12px;margin:12px;font-family:Orbitron;font-weight:700;letter-spacing:.06em}
+    .card .idx{position:absolute;top:12px;left:12px;z-index:3;font-family:Orbitron;font-weight:800;font-size:12px;padding:6px 10px;border-radius:999px;background:linear-gradient(90deg,var(--accent),var(--accent-2));color:#071022;box-shadow:0 6px 20px rgba(0,0,0,0.5)}
+    .card .play{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%) scale(.96);z-index:3;font-size:34px;opacity:0;transition:opacity .22s, transform .32s;filter:drop-shadow(0 6px 18px rgba(0,0,0,0.55));}
+    .card .thumb{position:absolute;inset:0;background:linear-gradient(180deg,rgba(0,0,0,0.22),rgba(0,0,0,0.35));z-index:1}
+    .card:hover{transform:translateY(-8px);box-shadow:0 28px 80px rgba(0,0,0,0.65)}
+    .card:hover::before{opacity:1;transform:scale(1)}
+    .card:hover .play{opacity:1;transform:translate(-50%,-50%) scale(1)}
 
-    .card svg{position:absolute; inset:0; width:100%; height:100%; opacity:.1}
+    /* player modal */
+    .overlay{position:fixed;inset:0;display:none;align-items:center;justify-content:center;background:rgba(1,6,10,0.6);backdrop-filter:blur(4px);z-index:60}
+    .overlay.open{display:flex}
+    .player{width:min(1200px,95vw);border-radius:16px;overflow:hidden;background:#000;border:1px solid rgba(255,255,255,0.08);box-shadow:0 30px 80px rgba(0,0,0,0.7)}
+    .player video{width:100%;height:auto;display:block;background:#000}
+    .player .bar{display:flex;align-items:center;gap:12px;padding:10px 14px;background:linear-gradient(180deg,rgba(255,255,255,0.02),rgba(255,255,255,0.01))}
+    .pill{padding:8px 12px;border-radius:999px;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);cursor:pointer}
 
-    /* Detail View */
-    .view{position:fixed; inset:0; display:none; place-items:center; padding:24px; background: radial-gradient(900px 600px at 20% -10%, rgba(255,0,255,.12), transparent 60%), radial-gradient(800px 600px at 120% 110%, rgba(0,238,255,.14), transparent 60%), linear-gradient(180deg, #04050a, #0a0c12);}
-    .view.active{display:grid; animation: fadeIn .45s ease-out}
-    @keyframes fadeIn{ from{opacity:0; transform:scale(.98)} to{opacity:1; transform:scale(1)} }
+    /* music controls */
+    .music-controls{position:fixed;left:24px;bottom:24px;display:flex;align-items:center;gap:10px;background:rgba(0,0,0,0.45);padding:8px 12px;border-radius:12px;border:1px solid rgba(255,255,255,0.06)}
+    .music-controls button{background:transparent;border:none;color:#cfefff;padding:6px 8px;border-radius:8px;cursor:pointer}
 
-    .player{width:min(1100px, 96vw); border-radius: var(--radius); overflow:hidden; background: #000; border:1px solid rgba(255,255,255,.16); box-shadow: var(--shadow)}
-    .player video{display:block; width:100%; height:auto; aspect-ratio:16/9; background:#000}
+    /* black & white tree on right */
+    .tree-wrap{position:relative;width:100%;height:100%;display:flex;align-items:center;justify-content:center}
+    .tree{position:absolute;right:12px;top:24px;width:360px;pointer-events:none;filter:grayscale(1);opacity:0.95}
+    .leaves{position:absolute;right:0;top:0;width:360px;height:100%;pointer-events:none;overflow:visible}
+    .leaf{position:absolute;top:-10vh;width:14px;height:14px;border-radius:6px;background:#fff;opacity:0.92;transform-origin:center center;filter:grayscale(1);box-shadow:0 2px 8px rgba(0,0,0,0.25)}
 
-    .bar{display:flex; align-items:center; gap:10px; padding:10px 14px; background: linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.03)); border-top:1px solid rgba(255,255,255,.12)}
-    .pill{display:inline-flex; align-items:center; gap:8px; padding:8px 12px; border-radius:999px; background: rgba(255,255,255,.06); border:1px solid rgba(255,255,255,.14)}
-    .back{cursor:pointer}
-    .title{font:800 14px/1 Orbitron, sans-serif; letter-spacing:.1em; text-transform:uppercase}
+    @keyframes fall{ to{ transform: translateY(120vh) rotate(720deg) translateX(120px); opacity:0 } }
+    @keyframes floatX{ 0%{ transform: translateX(0) } 50%{ transform:translateX(-40px) } 100%{ transform:translateX(0) } }
 
-    .controls{margin-left:auto; display:flex; align-items:center; gap:12px}
-    .btn{cursor:pointer; padding:8px 12px; border-radius:12px; border:1px solid rgba(255,255,255,.16); background:rgba(255,255,255,.06)}
+    /* small helpers */
+    footer{position:fixed;left:0;right:0;bottom:0;padding:10px 18px;text-align:center;color:#9fbdd6;font-size:13px}
 
-    .music-hint{position:fixed; left:50%; transform:translateX(-50%); bottom:24px; background:rgba(0,0,0,.55); border:1px solid rgba(255,255,255,.18); padding:10px 14px; border-radius:12px; backdrop-filter: blur(6px); display:none; align-items:center; gap:10px}
-    .music-hint.show{display:flex}
+    /* slice animations */
+    .animate .cut-text .slash{animation:slash 1.4s .9s cubic-bezier(.22,.9,.24,1) forwards}
+    .animate .cut-text .top{animation:sliceTop 1.6s 1.05s cubic-bezier(.16,.88,.24,1) forwards}
+    .animate .cut-text .bottom{animation:sliceBottom 1.6s 1.05s cubic-bezier(.16,.88,.24,1) forwards}
+    .animate.show-replace .replacement{animation:appear 1s 1.9s cubic-bezier(.2,.9,.2,1) forwards,glow 3s 2.4s infinite}
 
-    footer{opacity:.7; font-size:12px;}
-    .credit{color:var(--muted)}
-
-    /* View transitions for SPA */
-    .hide-home .home{display:none}
-    .hide-home{overflow:auto}
-
+    @keyframes slash{0%{transform:scaleX(0);opacity:0}20%{transform:scaleX(1);opacity:1}100%{transform:scaleX(1);opacity:1}}
+    @keyframes sliceTop{0%{transform:translateY(0)}40%{transform:translateY(-6px)}100%{transform:translateY(-58px);opacity:0}}
+    @keyframes sliceBottom{0%{transform:translateY(0)}40%{transform:translateY(6px)}100%{transform:translateY(58px);opacity:0}}
+    @keyframes appear{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:translateY(0)}}
+    @keyframes glow{0%,100%{text-shadow:var(--neon2)}50%{text-shadow:0 0 6px var(--accent)}}
   </style>
 </head>
 <body>
-  <div class="stars"></div>
-  <div class="grid"></div>
+  <div class="bg-grid" aria-hidden="true"></div>
+  <header>
+    <div class="logo"><span class="glow">⟪ LUGIA ⟫</span> Showcase</div>
+  </header>
 
-  <div class="wrap">
-    <header>
-      <h2><span>⟪ LUGIA ⟫</span> Showcase</h2>
-      <div class="brand-dot" aria-hidden="true"></div>
-    </header>
-
-    <main class="home">
+  <main>
+    <div class="left">
       <div class="hero">
-        <div class="tag">LUGIA — Scripter</div>
-        <!-- CUT / REVEAL TITLE -->
-        <div class="cut-text" aria-label="A ordinary Scripter">
-          <div class="top">A ordinary Scripter</div>
-          <div class="bottom">A ordinary Scripter</div>
+        <div class="tag">MY works</div>
+
+        <div class="cut-text" aria-hidden="true">
+          <div class="full">LUGIA</div>
+          <div class="slice top">A ordinary Scripter</div>
+          <div class="slice bottom">A ordinary Scripter</div>
           <div class="slash" aria-hidden="true"></div>
         </div>
-        <div class="replacement" aria-live="polite">A trustworthy scripter</div>
-        <p class="sub">I'm Lugia — a scripter. These are my creations. Click any tile to view the full demonstration. Music is off by default; toggle it on when you want.</p>
-      </div>
 
-      <!-- SHOWCASE GRID (only these labels) -->
-      <div class="grid-wrap" id="grid">
-        <!-- Cards are injected by JS for proper file mapping -->
-      </div>
-    </main>
+        <div class="replacement">A trustworthy scripter</div>
 
-    <!-- DETAIL VIEW (SPA) -->
-    <section id="view" class="view" aria-hidden="true">
-      <div class="player">
-        <video id="video" playsinline controls preload="metadata"></video>
-        <div class="bar">
-          <span class="pill back" id="backBtn">⟵ Back</span>
-          <span class="pill title" id="title">Showcase</span>
-          <div class="controls">
-            <button class="btn" id="toggleMusic">Music: On</button>
-            <label class="pill" style="gap:6px">Vol
-              <input id="vol" type="range" min="0" max="1" step="0.01" value="0.35" />
-            </label>
-          </div>
+        <p class="sub">Made by Lugia. These short clips show real systems I built and tested myself — interface, NPCs, admin tools, a reliable hatching system and a tidy inventory. Click any tile to watch the demo.</p>
+
+        <div class="grid" id="grid" aria-live="polite" aria-label="Showcase videos">
+          <!-- JS will insert the five tiles here -->
         </div>
       </div>
-      <div class="music-hint" id="musicHint">🔊 Tap "Music: On" if you don't hear audio (browser may block autoplay).</div>
-    </section>
+    </div>
 
-    <footer>
-      <div class="credit">Made by LUGIA</div>
-    </footer>
+    <div class="right">
+      <!-- black & white stylized tree svg -->
+      <div class="tree-wrap">
+        <svg class="tree" viewBox="0 0 300 500" xmlns="http://www.w3.org/2000/svg" role="img" aria-hidden="true">
+          <g fill="none" stroke="#ffffff" stroke-width="3" stroke-linecap="round">
+            <path d="M150 480 C150 410 140 360 130 330 C120 300 80 250 100 210 C120 170 160 170 170 140 C180 110 200 90 210 70" stroke-width="4" opacity=".9"/>
+            <path d="M150 480 C150 410 160 360 170 330 C180 300 220 250 200 210 C180 170 140 170 130 140 C120 110 100 90 90 70" stroke-width="4" opacity=".9"/>
+            <!-- canopy lines -->
+            <circle cx="150" cy="80" r="70" fill="#000" opacity="0.85"/>
+            <circle cx="210" cy="120" r="48" fill="#000" opacity="0.7"/>
+            <circle cx="90" cy="120" r="48" fill="#000" opacity="0.7"/>
+          </g>
+        </svg>
+
+        <div class="leaves" id="leaves"></div>
+      </div>
+    </div>
+  </main>
+
+  <div class="overlay" id="overlay" aria-hidden="true">
+    <div class="player" role="dialog" aria-label="Video player">
+      <video id="playerVideo" controls playsinline></video>
+      <div class="bar">
+        <div class="pill" id="backBtn">⟵ Back</div>
+        <div class="pill" id="playerTitle">Loading…</div>
+        <div style="flex:1"></div>
+        <div class="pill" id="muteToggle">Mute</div>
+      </div>
+    </div>
   </div>
 
-  <!-- Background music: Warriyo (NCS) -->
-  <audio id="bgm" src="warriyo-ncs.mp3" loop preload="none"></audio>
+  <div class="music-controls" id="musicControls">
+    <button id="playMusic">Play</button>
+    <div style="display:flex;align-items:center;gap:8px;"><label style="font-size:13px;color:#9fbdd6">Vol</label><input id="musicVol" type="range" min="0" max="1" step="0.01" value="0.35"></div>
+  </div>
+
+  <footer>© <span id="year"></span> Lugia — real projects, real results. Music on home page only.</footer>
+
+  <!-- background music: use the exact filename you uploaded in the repo root -->
+  <audio id="bgm" src="Warriyo, Laura Brehm - Mortals (Slowed) [NCS Release].mp3" loop preload="none"></audio>
 
   <script>
+    // ------- file mapping (your uploaded video filenames) -------
     const fileMap = {
       interface: 'Screen_Recording_2025-08-30_195352.mp4',
       npc: 'Screen Recording 2025-08-18 080949 (1).mp4',
@@ -205,112 +174,123 @@
       inventory: 'Roblox-2025-08-25T13_31_34.454Z (1) (1).mp4'
     };
 
-    const labels = {
-      interface: 'interface',
-      npc: 'npc',
-      'admin-commands': 'admin commands',
-      'hatching-system': 'hatching system',
-      inventory: 'inventory'
-    };
+    const labels = {interface:'interface', npc:'npc', 'admin-commands':'admin commands', 'hatching-system':'hatching system', inventory:'inventory'};
 
-    const icons = {
-      interface: `<svg viewBox="0 0 200 150" preserveAspectRatio="xMidYMid slice"><defs><linearGradient id="g1" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#0ef"/><stop offset="100%" stop-color="#f0f"/></linearGradient></defs><rect x="12" y="18" width="176" height="114" rx="14" stroke="url(#g1)" stroke-width="3" fill="none"/><rect x="24" y="34" width="80" height="22" rx="6" fill="#0ef" opacity=".18"/><rect x="24" y="62" width="152" height="10" rx="5" fill="#fff" opacity=".12"/><rect x="24" y="80" width="128" height="10" rx="5" fill="#fff" opacity=".1"/><rect x="24" y="98" width="96" height="10" rx="5" fill="#fff" opacity=".08"/></svg>`,
-      npc: `<svg viewBox="0 0 200 150"><defs><linearGradient id="g2" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#0ef"/><stop offset="100%" stop-color="#f0f"/></linearGradient></defs><circle cx="100" cy="56" r="26" stroke="url(#g2)" stroke-width="3" fill="none"/><path d="M38 132c12-34 46-38 62-38s50 4 62 38" stroke="#fff" stroke-opacity=".5" stroke-width="3" fill="none"/></svg>`,
-      'admin-commands': `<svg viewBox="0 0 200 150"><defs><linearGradient id="g3" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#0ef"/><stop offset="100%" stop-color="#f0f"/></linearGradient></defs><rect x="30" y="30" width="140" height="90" rx="12" stroke="url(#g3)" stroke-width="3" fill="none"/><text x="52" y="88" font-family="monospace" font-size="44" fill="#fff" opacity=".75">:></text></svg>`,
-      'hatching-system': `<svg viewBox="0 0 200 150"><defs><linearGradient id="g4" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#0ef"/><stop offset="100%" stop-color="#f0f"/></linearGradient></defs><ellipse cx="100" cy="86" rx="46" ry="56" stroke="url(#g4)" stroke-width="3" fill="none"/><path d="M72 86c8-6 16-6 24 0 8 6 16 6 24 0" stroke="#fff" stroke-opacity=".5" stroke-width="3" fill="none"/></svg>`,
-      inventory: `<svg viewBox="0 0 200 150"><defs><linearGradient id="g5" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#0ef"/><stop offset="100%" stop-color="#f0f"/></linearGradient></defs><rect x="38" y="36" width="124" height="78" rx="10" stroke="url(#g5)" stroke-width="3" fill="none"/><rect x="46" y="44" width="52" height="30" rx="6" fill="#fff" opacity=".12"/><rect x="104" y="44" width="52" height="30" rx="6" fill="#fff" opacity=".12"/><rect x="46" y="78" width="52" height="28" rx="6" fill="#fff" opacity=".1"/><rect x="104" y="78" width="52" height="28" rx="6" fill="#fff" opacity=".1"/></svg>`
-    };
-
-    const $ = (q, el=document) => el.querySelector(q);
-    const $$ = (q, el=document) => [...el.querySelectorAll(q)];
-
-    const grid = $('#grid');
-    const view = $('#view');
-    const videoEl = $('#video');
-    const titleEl = $('#title');
-    const backBtn = $('#backBtn');
-    const bgm = $('#bgm');
-    const toggleBtn = $('#toggleMusic');
-    const vol = $('#vol');
-    const musicHint = $('#musicHint');
-
-    // Build cards
-    Object.keys(fileMap).forEach((slug) => {
-      const card = document.createElement('div');
-      card.className = 'card';
-      card.innerHTML = `<div class="shine"></div>${icons[slug] || ''}<div class="label">${labels[slug]}</div>`;
-      card.addEventListener('mousemove', (e)=>{
-        const r = e.currentTarget.getBoundingClientRect();
-        const mx = ((e.clientX - r.left) / r.width) * 100;
-        card.style.setProperty('--mx', mx + '%');
-      });
-      card.addEventListener('click', ()=> openShowcase(slug));
+    // build the cards with index + play icon
+    const grid = document.getElementById('grid');
+    Object.keys(fileMap).forEach((key, i)=>{
+      const card = document.createElement('div'); card.className='card';
+      card.innerHTML = `
+        <div class="thumb" aria-hidden="true"></div>
+        <div class="idx">${i+1}</div>
+        <div class='label'>${labels[key]}</div>
+        <div class='play' aria-hidden="true">▶</div>
+      `;
+      card.addEventListener('click',()=>openPlayer(key));
       grid.appendChild(card);
     });
 
-    // SPA routing
-    function openShowcase(slug){
-      location.hash = `#/showcase/${slug}`;
-    }
-    function closeShowcase(){
-      location.hash = '#/';
-    }
-    backBtn.addEventListener('click', closeShowcase);
-    document.addEventListener('keydown', (e)=>{ if(e.key==='Escape') closeShowcase(); });
-
-    function route(){
-      const hash = location.hash;
-      if(hash.startsWith('#/showcase/')){
-        const slug = hash.split('/').pop();
-        const file = fileMap[slug];
-        if(!file){ closeShowcase(); return; }
-        document.body.classList.add('hide-home');
-        view.classList.add('active');
-        view.setAttribute('aria-hidden','false');
-        titleEl.textContent = labels[slug] || slug.replace(/-/g,' ');
-        videoEl.pause();
-        videoEl.removeAttribute('src');
-        videoEl.innerHTML = '';
-        const srcEl = document.createElement('source');
-        srcEl.src = new URL(file, location.href).href;
-        srcEl.type = 'video/mp4';
-        videoEl.appendChild(srcEl);
-        videoEl.load();
-        setTimeout(()=> videoEl.play().catch(()=>{}), 60);
-        ensureMusic();
-      } else {
-        videoEl.pause();
-        view.classList.remove('active');
-        view.setAttribute('aria-hidden','true');
-        document.body.classList.remove('hide-home');
-        musicHint.classList.remove('show');
-      }
-    }
-
-    // Music controls
-    let musicWanted = false;
-    function ensureMusic(){
-      bgm.volume = parseFloat(vol.value || '0.35');
-      toggleBtn.textContent = `Music: ${musicWanted? 'On':'Off'}`;
-      if(!musicWanted){ bgm.pause(); return; }
-      const tried = bgm.play();
-      if(tried && typeof tried.catch === 'function'){
-        tried.catch(()=>{ musicHint.classList.add('show'); });
-      }
-    }
-    toggleBtn.addEventListener('click', ()=>{ musicWanted = !musicWanted; ensureMusic(); if(!musicWanted) musicHint.classList.remove('show'); });
-    vol.addEventListener('input', ()=>{ bgm.volume = parseFloat(vol.value); });
-
-    // Cut-to-replacement intro choreography
+    // slice animation orchestration
     document.body.classList.add('animate');
-    setTimeout(()=> document.body.classList.add('show-replacement'), 2200);
+    setTimeout(()=>document.body.classList.add('show-replace'),2200);
 
-    // Year
-    $('#year').textContent = new Date().getFullYear();
+    // player controls
+    const overlay = document.getElementById('overlay');
+    const playerVideo = document.getElementById('playerVideo');
+    const playerTitle = document.getElementById('playerTitle');
+    const backBtn = document.getElementById('backBtn');
+    const bgm = document.getElementById('bgm');
+    const playMusicBtn = document.getElementById('playMusic');
+    const musicVol = document.getElementById('musicVol');
+    const muteToggle = document.getElementById('muteToggle');
 
-    // Initial route
-    route();
-    window.addEventListener('hashchange', route);
+    let bgmWanted = false; // whether the user toggled play
+    let bgmWasPlaying = false; // used to resume after closing video
+
+    // music controls
+    playMusicBtn.addEventListener('click', ()=>{
+      if(bgm.paused){ bgm.volume = parseFloat(musicVol.value); bgm.play().catch(()=>{}); playMusicBtn.textContent='Pause'; bgmWanted=true; }
+      else{ bgm.pause(); playMusicBtn.textContent='Play'; bgmWanted=false; }
+    });
+    musicVol.addEventListener('input', ()=>{ bgm.volume = parseFloat(musicVol.value); });
+
+    // open player
+    function openPlayer(slug){
+      const src = fileMap[slug];
+      if(!src) return;
+      playerTitle.textContent = labels[slug] || slug;
+
+      // pause background music (only if playing)
+      bgmWasPlaying = !bgm.paused && !bgm.ended;
+      if(bgmWasPlaying) bgm.pause();
+
+      overlay.classList.add('open'); overlay.setAttribute('aria-hidden','false');
+      playerVideo.src = encodeURI(src);
+      playerVideo.currentTime = 0;
+      playerVideo.play().catch(()=>{});
+
+      // prevent body scrolling while modal open
+      document.documentElement.style.overflow='hidden';
+      document.body.style.overflow='hidden';
+    }
+
+    // close player
+    function closePlayer(){
+      overlay.classList.remove('open'); overlay.setAttribute('aria-hidden','true');
+      try{ playerVideo.pause(); }catch(e){}
+      playerVideo.removeAttribute('src'); playerVideo.load();
+      document.documentElement.style.overflow=''; document.body.style.overflow='';
+      // resume bgm only if it was playing before
+      if(bgmWasPlaying && bgm.paused) { bgm.play().catch(()=>{}); }
+    }
+
+    backBtn.addEventListener('click', closePlayer);
+    overlay.addEventListener('click', (e)=>{ if(e.target===overlay) closePlayer(); });
+    document.addEventListener('keydown', (e)=>{ if(e.key==='Escape') closePlayer(); });
+
+    // mute toggle for player
+    let playerMuted = false;
+    muteToggle.addEventListener('click', ()=>{ playerMuted = !playerMuted; playerVideo.muted = playerMuted; muteToggle.textContent = playerMuted? 'Unmute':'Mute'; });
+
+    // set year
+    document.getElementById('year').textContent = new Date().getFullYear();
+
+    // add falling leaves (black & white) inside leaves container near right-side tree
+    const leavesRoot = document.getElementById('leaves');
+    function spawnLeaf(){
+      const leaf = document.createElement('div'); leaf.className='leaf';
+      const size = 8 + Math.random()*18; leaf.style.width = size+'px'; leaf.style.height = (size*0.6)+'px';
+      // random start x around tree area (mostly right side)
+      const startX = 30 + Math.random()*260; leaf.style.right = startX+'px';
+      leaf.style.top = ( -20 - Math.random()*30 )+'px';
+      leaf.style.opacity = (0.6 + Math.random()*0.4).toFixed(2);
+      leaf.style.borderRadius = (size*0.4)+'px';
+      leaf.style.background = Math.random()>0.5? '#fff' : '#e6e6e6';
+      const duration = 6000 + Math.random()*7000;
+      leaf.style.transition = `transform ${duration}ms linear, opacity ${duration}ms linear, right ${duration}ms linear`;
+      leavesRoot.appendChild(leaf);
+
+      // animate using requestAnimationFrame for better control
+      requestAnimationFrame(()=>{
+        leaf.style.transform = `translateY(${window.innerHeight + 120}px) rotate(${360 + Math.random()*720}deg)`;
+        leaf.style.right = (startX + (Math.random()*120 - 40))+'px';
+        leaf.style.opacity = 0;
+      });
+
+      // cleanup
+      setTimeout(()=>{ try{ leavesRoot.removeChild(leaf); }catch(e){} }, duration+300);
+    }
+
+    // spawn leaves periodically with random bursts
+    setInterval(()=>{
+      const burst = 1 + Math.floor(Math.random()*3);
+      for(let i=0;i<burst;i++) setTimeout(spawnLeaf, i*180 + Math.random()*400);
+    }, 1400);
+
+    // friendly hint if bgm couldn't autoplay after page load
+    window.addEventListener('load', ()=>{
+      // intentionally not forcing autoplay — user must Press Play for audio in many browsers
+    });
   </script>
 </body>
 </html>
