@@ -13,13 +13,18 @@
       --neon2: 0 0 10px var(--accent-2), 0 0 28px rgba(255,0,208,0.08);
     }
     *{box-sizing:border-box}
-    html,body{height:100%;margin:0;font-family:Montserrat,system-ui,Arial;background:linear-gradient(180deg,var(--bg-1),var(--bg-2));color:#e9f7ff;overflow:auto}
+    html,body{height:100%;margin:0;font-family:Montserrat,system-ui,Arial;background:linear-gradient(180deg,var(--bg-1),var(--bg-2));color:#e9f7ff;overflow:auto;scroll-behavior:smooth;-webkit-overflow-scrolling:touch;touch-action:pan-y}
+
+    /* reduce heavy rendering on low-power devices */
+    @media (prefers-reduced-motion: reduce){
+      *{transition:none!important;animation:none!important}
+    }
 
     /* subtle animated background */
     .bg-grid{position:fixed;inset:0;pointer-events:none;background-image:radial-gradient(rgba(255,255,255,0.02) 1px, transparent 1px);background-size:24px 24px;opacity:.25;mix-blend-mode:overlay}
 
     header{display:flex;align-items:center;justify-content:space-between;padding:18px 28px}
-    .logo{font-weight:800;font-family:Orbitron,monospace;letter-spacing:.12em}
+    .logo{font-weight:800;font-family:Orbitron,monospace;letter-spacing:.12em;will-change:transform}
     .logo .glow{color:var(--accent);text-shadow:var(--neon)}
 
     main{display:flex;gap:30px;padding:18px 28px;min-height:calc(100vh - 120px)}
@@ -32,55 +37,50 @@
 
     .cut-text{position:relative;margin:28px auto;padding:6px 0}
     .cut-text .full{font-family:Orbitron,monospace;font-weight:800;font-size:clamp(30px,6vw + 12px,76px);color:rgba(255,255,255,0.04);line-height:1.02}
-    .cut-text .slice{position:absolute;left:0;right:0;display:flex;align-items:center;justify-content:center;font-family:Orbitron,monospace;font-weight:800;font-size:clamp(30px,6vw + 12px,76px);line-height:1;color:#eaffff}
+    .cut-text .slice{position:absolute;left:0;right:0;display:flex;align-items:center;justify-content:center;font-family:Orbitron,monospace;font-weight:800;font-size:clamp(30px,6vw + 12px,76px);line-height:1;color:#eaffff;will-change:transform,opacity}
     .cut-text .top{clip-path:inset(0 0 50% 0)}
     .cut-text .bottom{clip-path:inset(50% 0 0 0)}
     .cut-text .slash{position:absolute;left:10%;right:10%;top:50%;height:3px;background:linear-gradient(90deg,transparent,#fff,transparent);transform:scaleX(0);opacity:0}
 
-    .replacement{font-family:Orbitron,monospace;font-weight:800;font-size:clamp(34px,6.5vw + 14px,84px);margin-top:10px;opacity:0;transform:translateY(18px);text-shadow:var(--neon2);color:#fff}
+    .replacement{font-family:Orbitron,monospace;font-weight:800;font-size:clamp(34px,6.5vw + 14px,84px);margin-top:10px;opacity:0;transform:translateY(18px);text-shadow:var(--neon2);color:#fff;will-change:opacity,transform}
 
     .sub{max-width:780px;margin:18px auto 0;color:#9fbdd6;font-size:15px}
 
-    /* grid of demo cards */
-    .grid{display:grid;grid-template-columns:repeat(5,1fr);gap:14px;margin-top:26px;width:100%}
-    @media(max-width:1100px){.grid{grid-template-columns:repeat(3,1fr)}}
-    @media(max-width:720px){main{flex-direction:column} .right{width:100%} .grid{grid-template-columns:repeat(2,1fr)} .cut-text .full{font-size:clamp(22px,6vw + 6px,44px)} .cut-text .slice{font-size:clamp(22px,6vw + 6px,44px)} .replacement{font-size:44px}}
+    /* grid of demo cards (auto-fit for varying counts) */
+    .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:14px;margin-top:26px;width:100%}
+    @media(max-width:720px){main{flex-direction:column} .right{width:100%} .cut-text .full{font-size:clamp(22px,6vw + 6px,44px)} .cut-text .slice{font-size:clamp(22px,6vw + 6px,44px)} .replacement{font-size:44px}}
 
     /* ENHANCED CARD STYLE */
-    .card{position:relative;border-radius:16px;overflow:hidden;background:linear-gradient(180deg,rgba(255,255,255,0.02),rgba(255,255,255,0.01));border:1px solid rgba(255,255,255,0.04);cursor:pointer;aspect-ratio:16/10;display:flex;align-items:flex-end;justify-content:center;transition:transform .32s cubic-bezier(.2,.9,.2,1), box-shadow .32s;z-index:1}
-    .card::before{content:"";position:absolute;inset:-2px;background:linear-gradient(90deg,var(--accent),var(--accent-2));filter:blur(10px);opacity:0;transform:scale(.98);transition:opacity .28s, transform .28s;pointer-events:none}
+    .card{position:relative;border-radius:16px;overflow:hidden;background:linear-gradient(180deg,rgba(255,255,255,0.02),rgba(255,255,255,0.01));border:1px solid rgba(255,255,255,0.04);cursor:pointer;aspect-ratio:16/10;display:flex;align-items:flex-end;justify-content:center;transition:transform .28s cubic-bezier(.2,.9,.2,1), box-shadow .28s;z-index:1;will-change:transform}
+    .card::before{content:"";position:absolute;inset:-2px;background:linear-gradient(90deg,var(--accent),var(--accent-2));filter:blur(10px);opacity:0;transform:scale(.98);transition:opacity .24s, transform .24s;pointer-events:none}
     .card::after{content:"";position:absolute;inset:0;border-radius:inherit;padding:2px;background:linear-gradient(180deg,rgba(255,255,255,0.02),transparent);mix-blend-mode:overlay;pointer-events:none}
     .card .label{position:relative;z-index:3;background:rgba(0,0,0,0.45);padding:12px 10px;border-radius:12px;margin:12px;font-family:Orbitron;font-weight:700;letter-spacing:.06em}
     .card .idx{position:absolute;top:12px;left:12px;z-index:3;font-family:Orbitron;font-weight:800;font-size:12px;padding:6px 10px;border-radius:999px;background:linear-gradient(90deg,var(--accent),var(--accent-2));color:#071022;box-shadow:0 6px 20px rgba(0,0,0,0.5)}
-    .card .play{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%) scale(.96);z-index:3;font-size:34px;opacity:0;transition:opacity .22s, transform .32s;filter:drop-shadow(0 6px 18px rgba(0,0,0,0.55));}
-    .card .thumb{position:absolute;inset:0;background:linear-gradient(180deg,rgba(0,0,0,0.22),rgba(0,0,0,0.35));z-index:1}
+    .card .thumb{position:absolute;inset:0;background:linear-gradient(180deg,rgba(0,0,0,0.22),rgba(0,0,0,0.35));z-index:1;background-size:cover;background-position:center}
     .card:hover{transform:translateY(-8px);box-shadow:0 28px 80px rgba(0,0,0,0.65)}
     .card:hover::before{opacity:1;transform:scale(1)}
-    .card:hover .play{opacity:1;transform:translate(-50%,-50%) scale(1)}
 
     /* player modal */
     .overlay{position:fixed;inset:0;display:none;align-items:center;justify-content:center;background:rgba(1,6,10,0.6);backdrop-filter:blur(4px);z-index:60}
     .overlay.open{display:flex}
-    .player{width:min(1200px,95vw);border-radius:16px;overflow:hidden;background:#000;border:1px solid rgba(255,255,255,0.08);box-shadow:0 30px 80px rgba(0,0,0,0.7)}
-    .player video{width:100%;height:auto;display:block;background:#000}
+    .player{width:min(1200px,95vw);border-radius:16px;overflow:hidden;background:#000;border:1px solid rgba(255,255,255,0.08);box-shadow:0 30px 80px rgba(0,0,0,0.7);will-change:transform}
+    .player video,.player img{width:100%;height:auto;display:block;background:#000}
     .player .bar{display:flex;align-items:center;gap:12px;padding:10px 14px;background:linear-gradient(180deg,rgba(255,255,255,0.02),rgba(255,255,255,0.01))}
     .pill{padding:8px 12px;border-radius:999px;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);cursor:pointer}
 
-    /* music controls */
-    .music-controls{position:fixed;left:24px;bottom:24px;display:flex;align-items:center;gap:10px;background:rgba(0,0,0,0.45);padding:8px 12px;border-radius:12px;border:1px solid rgba(255,255,255,0.06)}
-    .music-controls button{background:transparent;border:none;color:#cfefff;padding:6px 8px;border-radius:8px;cursor:pointer}
+    /* small music toggle (compact, unobtrusive) */
+    .music-toggle{position:fixed;left:18px;bottom:18px;width:44px;height:44px;border-radius:12px;background:rgba(0,0,0,0.45);display:flex;align-items:center;justify-content:center;z-index:70;border:1px solid rgba(255,255,255,0.06);cursor:pointer}
 
     /* black & white tree on right */
-    .tree-wrap{position:relative;width:100%;height:100%;display:flex;align-items:center;justify-content:center}
-    .tree{position:absolute;right:12px;top:24px;width:360px;pointer-events:none;filter:grayscale(1);opacity:0.95}
+    .tree-wrap{position:relative;width:100%;height:100%;display:flex;align-items:center;justify-content:center;pointer-events:none}
+    .tree{position:absolute;right:12px;top:24px;width:360px;pointer-events:none;filter:grayscale(1);opacity:0.95;will-change:transform}
     .leaves{position:absolute;right:0;top:0;width:360px;height:100%;pointer-events:none;overflow:visible}
-    .leaf{position:absolute;top:-10vh;width:14px;height:14px;border-radius:6px;background:#fff;opacity:0.92;transform-origin:center center;filter:grayscale(1);box-shadow:0 2px 8px rgba(0,0,0,0.25)}
+    .leaf{position:absolute;top:0;left:0;width:14px;height:14px;border-radius:6px;background:#fff;opacity:0.95;transform-origin:center center;filter:grayscale(1);box-shadow:0 2px 8px rgba(0,0,0,0.18);will-change:transform,opacity}
 
-    @keyframes fall{ to{ transform: translateY(120vh) rotate(720deg) translateX(120px); opacity:0 } }
-    @keyframes floatX{ 0%{ transform: translateX(0) } 50%{ transform:translateX(-40px) } 100%{ transform:translateX(0) } }
+    @keyframes leafFall{ to{ transform: translate3d(var(--dx,120px), var(--dy,120vh), 0) rotate(var(--rot,720deg)); opacity:0 } }
 
     /* small helpers */
-    footer{position:fixed;left:0;right:0;bottom:0;padding:10px 18px;text-align:center;color:#9fbdd6;font-size:13px}
+    footer{position:fixed;left:0;right:0;bottom:0;padding:10px 18px;text-align:center;color:#e9f7ff;font-size:13px;text-shadow:none}
 
     /* slice animations */
     .animate .cut-text .slash{animation:slash 1.4s .9s cubic-bezier(.22,.9,.24,1) forwards}
@@ -93,6 +93,22 @@
     @keyframes sliceBottom{0%{transform:translateY(0)}40%{transform:translateY(6px)}100%{transform:translateY(58px);opacity:0}}
     @keyframes appear{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:translateY(0)}}
     @keyframes glow{0%,100%{text-shadow:var(--neon2)}50%{text-shadow:0 0 6px var(--accent)}}
+      /* right-side text */
+.right-text{
+  font-family:Orbitron,monospace;
+  font-weight:800;
+  font-size:clamp(20px,3.5vw,36px);
+  color:#e9f7ff;
+  letter-spacing:.12em;
+  text-transform:uppercase;
+  text-align:center;
+  text-shadow:none;
+  padding:12px 18px;
+  border-radius:12px;
+  border:1px solid rgba(255,255,255,0.04);
+  background:transparent;
+}
+
   </style>
 </head>
 <body>
@@ -118,33 +134,20 @@
         <p class="sub">Made by Lugia. These short clips show real systems I built and tested myself — interface, NPCs, admin tools, a reliable hatching system and a tidy inventory. Click any tile to watch the demo.</p>
 
         <div class="grid" id="grid" aria-live="polite" aria-label="Showcase videos">
-          <!-- JS will insert the five tiles here -->
+          <!-- JS will insert the six tiles here -->
         </div>
       </div>
     </div>
 
-    <div class="right">
-      <!-- black & white stylized tree svg -->
-      <div class="tree-wrap">
-        <svg class="tree" viewBox="0 0 300 500" xmlns="http://www.w3.org/2000/svg" role="img" aria-hidden="true">
-          <g fill="none" stroke="#ffffff" stroke-width="3" stroke-linecap="round">
-            <path d="M150 480 C150 410 140 360 130 330 C120 300 80 250 100 210 C120 170 160 170 170 140 C180 110 200 90 210 70" stroke-width="4" opacity=".9"/>
-            <path d="M150 480 C150 410 160 360 170 330 C180 300 220 250 200 210 C180 170 140 170 130 140 C120 110 100 90 90 70" stroke-width="4" opacity=".9"/>
-            <!-- canopy lines -->
-            <circle cx="150" cy="80" r="70" fill="#000" opacity="0.85"/>
-            <circle cx="210" cy="120" r="48" fill="#000" opacity="0.7"/>
-            <circle cx="90" cy="120" r="48" fill="#000" opacity="0.7"/>
-          </g>
-        </svg>
-
-        <div class="leaves" id="leaves"></div>
-      </div>
+        <div class="right">
+      <div class="right-text" aria-hidden="true">LUGIA / LUMINOUS</div>
     </div>
   </main>
 
   <div class="overlay" id="overlay" aria-hidden="true">
     <div class="player" role="dialog" aria-label="Video player">
-      <video id="playerVideo" controls playsinline></video>
+      <video id="playerVideo" controls playsinline style="display:none"></video>
+      <img id="playerImage" alt="screenshot" style="display:none" />
       <div class="bar">
         <div class="pill" id="backBtn">⟵ Back</div>
         <div class="pill" id="playerTitle">Loading…</div>
@@ -154,80 +157,108 @@
     </div>
   </div>
 
-  <div class="music-controls" id="musicControls">
-    <button id="playMusic">Play</button>
-    <div style="display:flex;align-items:center;gap:8px;"><label style="font-size:13px;color:#9fbdd6">Vol</label><input id="musicVol" type="range" min="0" max="1" step="0.01" value="0.35"></div>
-  </div>
+  <!-- compact music toggle (no large play button) -->
+  <div class="music-toggle" id="musicToggle" title="Music">🔈</div>
 
-  <footer>© <span id="year"></span> Lugia — real projects, real results. Music on home page only.</footer>
+  <footer>LUGIA/LUMINOUS</footer>
 
   <!-- background music: use the exact filename you uploaded in the repo root -->
-  <audio id="bgm" src="Warriyo, Laura Brehm - Mortals (Slowed) [NCS Release].mp3" loop preload="none"></audio>
+  <audio id="bgm" src="Warriyo, Laura Brehm - Mortals (Slowed) [NCS Release].mp3" loop preload="auto"></audio>
 
   <script>
-    // ------- file mapping (your uploaded video filenames) -------
-    const fileMap = {
-      interface: 'Screen_Recording_2025-08-30_195352.mp4',
-      npc: 'Screen Recording 2025-08-18 080949 (1).mp4',
-      'admin-commands': 'Screen_Recording_2025-08-27_184500 (2).mp4',
-      'hatching-system': 'comeplete work showcase (1) (2).mp4',
-      inventory: 'Roblox-2025-08-25T13_31_34.454Z (1) (1).mp4'
-    };
+    // NEW mapping: six tiles in the exact order you requested
+    const fileMap = [
+      {key:'npc', src: 'Roblox-2025-08-25T13_31_34.454Z (1) (1).mp4', label: 'NPC'},
+      {key:'vip', src: 'Screen Recording 2025-08-18 080949 (1).mp4', label: 'VIP Tag (Chat)'},
+      {key:'inventory', src: 'Screen_Recording_2025-08-27_184500 (2).mp4', label: 'Inventory'},
+      {key:'interface', src: 'Screen_Recording_2025-08-30_195352.mp4', label: 'Interface'},
+      {key:'admin', src: 'Screenshot 2025-08-26 152034.png', label: 'Admin Commands'},
+      {key:'hatch', src: 'comeplete work showcase (1) (2).mp4', label: 'Hatching System'}
+    ];
 
-    const labels = {interface:'interface', npc:'npc', 'admin-commands':'admin commands', 'hatching-system':'hatching system', inventory:'inventory'};
-
-    // build the cards with index + play icon
+    // build the cards
     const grid = document.getElementById('grid');
-    Object.keys(fileMap).forEach((key, i)=>{
+    fileMap.forEach((item, i)=>{
       const card = document.createElement('div'); card.className='card';
+      // use screenshot as thumbnail for image files; videos will have stylized cover
+      const isImage = /\.(png|jpe?g|gif)$/i.test(item.src);
+      const thumbStyle = isImage ? `background-image:url('${item.src}')` : `background-image:linear-gradient(180deg, rgba(0,0,0,0.25), rgba(0,0,0,0.5)), url('Screenshot 2025-08-26 152034.png')`;
       card.innerHTML = `
-        <div class="thumb" aria-hidden="true"></div>
+        <div class="thumb" aria-hidden="true" style="${thumbStyle}"></div>
         <div class="idx">${i+1}</div>
-        <div class='label'>${labels[key]}</div>
-        <div class='play' aria-hidden="true">▶</div>
+        <div class='label'>${item.label}</div>
       `;
-      card.addEventListener('click',()=>openPlayer(key));
+      card.addEventListener('click',()=>openPlayer(item));
       grid.appendChild(card);
     });
 
-    // slice animation orchestration
+    // orchestration: slice -> reveal
     document.body.classList.add('animate');
     setTimeout(()=>document.body.classList.add('show-replace'),2200);
 
-    // player controls
+    // player / music controls
     const overlay = document.getElementById('overlay');
     const playerVideo = document.getElementById('playerVideo');
+    const playerImage = document.getElementById('playerImage');
     const playerTitle = document.getElementById('playerTitle');
     const backBtn = document.getElementById('backBtn');
     const bgm = document.getElementById('bgm');
-    const playMusicBtn = document.getElementById('playMusic');
-    const musicVol = document.getElementById('musicVol');
+    const musicToggle = document.getElementById('musicToggle');
     const muteToggle = document.getElementById('muteToggle');
 
-    let bgmWanted = false; // whether the user toggled play
-    let bgmWasPlaying = false; // used to resume after closing video
+    let bgmWanted = false;
+    let bgmWasPlaying = false;
 
-    // music controls
-    playMusicBtn.addEventListener('click', ()=>{
-      if(bgm.paused){ bgm.volume = parseFloat(musicVol.value); bgm.play().catch(()=>{}); playMusicBtn.textContent='Pause'; bgmWanted=true; }
-      else{ bgm.pause(); playMusicBtn.textContent='Play'; bgmWanted=false; }
+    bgm.volume = 0.22;
+    // try to autoplay the background music on load; if browser blocks, leave toggle visible for user to enable
+    window.addEventListener('DOMContentLoaded', async ()=>{
+      try{
+        await bgm.play();
+        bgmWanted = true;
+        musicToggle.textContent = '🔊';
+        musicToggle.title = 'Click to mute background music';
+      }catch(e){
+        // autoplay blocked: show muted icon — user can tap
+        bgm.pause();
+        bgmWanted = false;
+        musicToggle.textContent = '🔈';
+        musicToggle.title = 'Enable background music';
+      }
     });
-    musicVol.addEventListener('input', ()=>{ bgm.volume = parseFloat(musicVol.value); });
 
-    // open player
-    function openPlayer(slug){
-      const src = fileMap[slug];
-      if(!src) return;
-      playerTitle.textContent = labels[slug] || slug;
+    // compact toggle behaviour: single small button — click to play/pause
+    musicToggle.addEventListener('click', async (e)=>{
+      if(bgm.paused){
+        try{ await bgm.play(); bgmWanted = true; musicToggle.textContent='🔊'; musicToggle.title='Click to mute background music'; }
+        catch(e){ musicToggle.textContent='🔈'; musicToggle.title='Autoplay blocked — tap again after interacting with page'; }
+      } else {
+        bgm.pause(); bgmWanted = false; musicToggle.textContent='🔈'; musicToggle.title='Enable background music';
+      }
+    });
 
-      // pause background music (only if playing)
+    // open player: detect image vs video
+    function openPlayer(item){
+      const src = item.src;
+      playerTitle.textContent = item.label;
+
+      // pause bgm if playing
       bgmWasPlaying = !bgm.paused && !bgm.ended;
       if(bgmWasPlaying) bgm.pause();
 
       overlay.classList.add('open'); overlay.setAttribute('aria-hidden','false');
-      playerVideo.src = encodeURI(src);
-      playerVideo.currentTime = 0;
-      playerVideo.play().catch(()=>{});
+
+      if(/\.(png|jpe?g|gif)$/i.test(src)){
+        playerVideo.style.display='none';
+        playerVideo.pause();
+        playerImage.style.display='block';
+        playerImage.src = src;
+      } else {
+        playerImage.style.display='none';
+        playerVideo.style.display='block';
+        playerVideo.src = encodeURI(src);
+        playerVideo.currentTime = 0;
+        playerVideo.play().catch(()=>{});
+      }
 
       // prevent body scrolling while modal open
       document.documentElement.style.overflow='hidden';
@@ -239,58 +270,56 @@
       overlay.classList.remove('open'); overlay.setAttribute('aria-hidden','true');
       try{ playerVideo.pause(); }catch(e){}
       playerVideo.removeAttribute('src'); playerVideo.load();
+      playerImage.removeAttribute('src'); playerImage.style.display='none';
       document.documentElement.style.overflow=''; document.body.style.overflow='';
-      // resume bgm only if it was playing before
-      if(bgmWasPlaying && bgm.paused) { bgm.play().catch(()=>{}); }
+      // resume bgm if it was playing
+      if(bgmWasPlaying && bgm.paused){ bgm.play().catch(()=>{}); }
     }
 
     backBtn.addEventListener('click', closePlayer);
     overlay.addEventListener('click', (e)=>{ if(e.target===overlay) closePlayer(); });
     document.addEventListener('keydown', (e)=>{ if(e.key==='Escape') closePlayer(); });
 
-    // mute toggle for player
+    // mute toggle for player (separate from bgm)
     let playerMuted = false;
     muteToggle.addEventListener('click', ()=>{ playerMuted = !playerMuted; playerVideo.muted = playerMuted; muteToggle.textContent = playerMuted? 'Unmute':'Mute'; });
 
     // set year
     document.getElementById('year').textContent = new Date().getFullYear();
 
-    // add falling leaves (black & white) inside leaves container near right-side tree
+    // leaves (throttled, GPU-accelerated)
     const leavesRoot = document.getElementById('leaves');
-    function spawnLeaf(){
-      const leaf = document.createElement('div'); leaf.className='leaf';
-      const size = 8 + Math.random()*18; leaf.style.width = size+'px'; leaf.style.height = (size*0.6)+'px';
-      // random start x around tree area (mostly right side)
-      const startX = 30 + Math.random()*260; leaf.style.right = startX+'px';
-      leaf.style.top = ( -20 - Math.random()*30 )+'px';
-      leaf.style.opacity = (0.6 + Math.random()*0.4).toFixed(2);
-      leaf.style.borderRadius = (size*0.4)+'px';
-      leaf.style.background = Math.random()>0.5? '#fff' : '#e6e6e6';
-      const duration = 6000 + Math.random()*7000;
-      leaf.style.transition = `transform ${duration}ms linear, opacity ${duration}ms linear, right ${duration}ms linear`;
-      leavesRoot.appendChild(leaf);
-
-      // animate using requestAnimationFrame for better control
-      requestAnimationFrame(()=>{
-        leaf.style.transform = `translateY(${window.innerHeight + 120}px) rotate(${360 + Math.random()*720}deg)`;
-        leaf.style.right = (startX + (Math.random()*120 - 40))+'px';
-        leaf.style.opacity = 0;
-      });
-
-      // cleanup
-      setTimeout(()=>{ try{ leavesRoot.removeChild(leaf); }catch(e){} }, duration+300);
+    if (leavesRoot) {
+      const MAX_LEAVES = 20;
+      function spawnLeaf(){
+        if(!leavesRoot || leavesRoot.children.length >= MAX_LEAVES) return;
+        const leaf = document.createElement('div'); leaf.className='leaf';
+        const size = 8 + Math.random()*22; leaf.style.width = size+'px'; leaf.style.height = (size*0.6)+'px';
+        const treeStartX = Math.max(window.innerWidth - 420, window.innerWidth*0.6);
+        const startLeft = treeStartX + Math.random()*(Math.min(320, window.innerWidth*0.3));
+        leaf.style.left = startLeft + 'px';
+        leaf.style.top = (-20 - Math.random()*40) + 'px';
+        leaf.style.opacity = (0.6 + Math.random()*0.4).toFixed(2);
+        leaf.style.borderRadius = (size*0.4)+'px';
+        leaf.style.background = Math.random()>0.5? '#fff' : '#e6e6e6';
+        const dx = (Math.random()*160 - 80) + 'px';
+        const dy = (window.innerHeight + 140) + 'px';
+        const rot = (360 + Math.random()*720) + 'deg';
+        const dur = Math.floor(4200 + Math.random()*6200);
+        leaf.style.setProperty('--dx', dx);
+        leaf.style.setProperty('--dy', dy);
+        leaf.style.setProperty('--rot', rot);
+        leaf.style.animation = `leafFall ${dur}ms linear forwards`;
+        leavesRoot.appendChild(leaf);
+        leaf.addEventListener('animationend', ()=>{ try{ leavesRoot.removeChild(leaf); }catch(e){} });
+      }
+      let leafTimer = setInterval(()=>{ const burst = 1 + Math.floor(Math.random()*2); for(let i=0;i<burst;i++) setTimeout(spawnLeaf, i*140 + Math.random()*260); }, 1000);
+      let resizeTimer;
+      window.addEventListener('resize', ()=>{ clearTimeout(resizeTimer); if (leafTimer) clearInterval(leafTimer); leafTimer = setInterval(()=>{ const burst = 1; setTimeout(spawnLeaf, Math.random()*300); }, 1200); resizeTimer = setTimeout(()=>{ if (leafTimer) clearInterval(leafTimer); leafTimer = setInterval(()=>{ const burst = 1 + Math.floor(Math.random()*2); for(let i=0;i<burst;i++) setTimeout(spawnLeaf, i*140 + Math.random()*260); }, 1000); }, 600); });
+    } else {
+      // leaves container not present — skip animations
     }
 
-    // spawn leaves periodically with random bursts
-    setInterval(()=>{
-      const burst = 1 + Math.floor(Math.random()*3);
-      for(let i=0;i<burst;i++) setTimeout(spawnLeaf, i*180 + Math.random()*400);
-    }, 1400);
-
-    // friendly hint if bgm couldn't autoplay after page load
-    window.addEventListener('load', ()=>{
-      // intentionally not forcing autoplay — user must Press Play for audio in many browsers
-    });
   </script>
 </body>
 </html>
