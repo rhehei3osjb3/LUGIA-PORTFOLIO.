@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>LUGIA — Neon Showcase</title>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700;800&family=Orbitron:wght@600;800&display=swap" rel="stylesheet">
+  <style>
+    :root{ --bg-1:#03050a; --bg-2:#07111a; --accent:#00f0ff; --accent-2:#ff00d0; }
+    *{box-sizing:border-box}
+    html,body{height:100%;margin:0;font-family:Montserrat,system-ui,Arial;background:linear-gradient(180deg,var(--bg-1),var(--bg-2));color:#e9f7ff;overflow:auto;scroll-behavior:smooth;-webkit-overflow-scrolling:touch}
+
+    .bg-grid{position:fixed;inset:0;pointer-events:none;background-image:radial-gradient(rgba(255,255,255,0.02) 1px, transparent 1px);background-size:24px 24px;opacity:.22}
+    header{display:flex;align-items:center;justify-content:space-between;padding:18px 28px}
+    .logo{font-weight:800;font-family:Orbitron,monospace;letter-spacing:.12em}
+
+    main{display:flex;gap:30px;padding:18px 28px;min-height:calc(100vh - 120px)}
+    .left{flex:1;min-width:320px;display:flex;flex-direction:column;align-items:center;justify-content:flex-start;padding-top:40px}
+    .right{width:420px;position:relative;display:flex;align-items:center;justify-content:center}
+
+    .hero{width:100%;max-width:980px;text-align:center}
+    .tag{display:inline-block;padding:8px 12px;border-radius:999px;background:transparent;font-weight:700;color:#e9f7ff;font-size:12px;letter-spacing:.18em}
+
+    .cut-text{position:relative;margin:28px auto;padding:6px 0}
+    .cut-text .full{font-family:Orbitron,monospace;font-weight:800;font-size:clamp(30px,6vw + 12px,76px);color:rgba(255,255,255,0.06);line-height:1.02}
+    .cut-text .slice{position:absolute;left:0;right:0;display:flex;align-items:center;justify-content:center;font-family:Orbitron,monospace;font-weight:800;font-size:clamp(30px,6vw + 12px,76px);line-height:1;color:#eaffff}
+    .cut-text .top{clip-path:inset(0 0 50% 0)}
+    .cut-text .bottom{clip-path:inset(50% 0 0 0)}
+    .cut-text .slash{position:absolute;left:10%;right:10%;top:50%;height:3px;background:linear-gradient(90deg,transparent,#fff,transparent);transform:scaleX(0);opacity:0}
+
+    .replacement{font-family:Orbitron,monospace;font-weight:800;font-size:clamp(34px,6.5vw + 14px,84px);margin-top:10px;opacity:0;transform:translateY(18px);color:#fff}
+    .sub{max-width:780px;margin:18px auto 0;color:#cbdff0;font-size:15px}
+
+    /* responsive card grid */
+    .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px;margin-top:26px;width:100%}
+    @media(max-width:720px){main{flex-direction:column} .right{width:100%}}
+
+    .card{position:relative;border-radius:12px;overflow:hidden;background:linear-gradient(180deg,rgba(255,255,255,0.02),rgba(255,255,255,0.01));border:1px solid rgba(255,255,255,0.04);cursor:pointer;display:flex;flex-direction:column;align-items:stretch}
+    .thumb{width:100%;aspect-ratio:16/9;background:#06070a;display:block}
+    .thumb img,.thumb video{width:100%;height:100%;object-fit:cover;display:block}
+
+    .meta{padding:10px 12px;background:transparent;display:flex;align-items:center;justify-content:space-between}
+    .label{font-family:Orbitron;font-weight:800;font-size:13px;letter-spacing:.06em}
+    .idx{font-family:Orbitron;font-weight:700;font-size:12px;background:linear-gradient(90deg,var(--accent),var(--accent-2));color:#071022;padding:6px 8px;border-radius:10px}
+
+    .card:hover{transform:translateY(-6px);box-shadow:0 20px 60px rgba(0,0,0,0.6)}
+
+    /* constrained modal/player */
+    .overlay{position:fixed;inset:0;display:none;align-items:center;justify-content:center;background:rgba(0,0,0,0.6);backdrop-filter:blur(6px);z-index:999}
+    .overlay.open{display:flex}
+    .player{width:min(1100px,92vw);max-height:80vh;border-radius:12px;overflow:hidden;background:#000;border:1px solid rgba(255,255,255,0.06);display:flex;flex-direction:column}
+    .player .media-wrap{flex:1;display:flex;align-items:center;justify-content:center;background:#000}
+    .player video,.player img{max-width:100%;max-height:calc(80vh - 64px);width:auto;height:auto;object-fit:contain;display:block}
+    .player .bar{height:56px;display:flex;align-items:center;gap:12px;padding:8px 12px;background:linear-gradient(180deg,rgba(255,255,255,0.02),rgba(255,255,255,0.01))}
+    .pill{padding:8px 12px;border-radius:999px;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);cursor:pointer}
+
+    .music-toggle{position:fixed;left:18px;bottom:18px;width:44px;height:44px;border-radius:12px;background:rgba(0,0,0,0.45);display:flex;align-items:center;justify-content:center;z-index:1000;border:1px solid rgba(255,255,255,0.06);cursor:pointer}
+    .tree-wrap{position:relative;width:100%;height:100%;display:flex;align-items:center;justify-content:center;pointer-events:none}
+    .leaves{position:absolute;right:0;top:0;width:360px;height:100%;pointer-events:none;overflow:visible}
+
+    footer{position:fixed;left:0;right:0;bottom:0;padding:10px 18px;text-align:center;color:#e9f7ff;font-size:13px}
+
+    /* animations */
+    .animate .cut-text .slash{animation:slash 1.4s .9s cubic-bezier(.22,.9,.24,1) forwards}
+    .animate .cut-text .top{animation:sliceTop 1.6s 1.05s cubic-bezier(.16,.88,.24,1) forwards}
+    .animate .cut-text .bottom{animation:sliceBottom 1.6s 1.05s cubic-bezier(.16,.88,.24,1) forwards}
+    .animate.show-replace .replacement{animation:appear 1s 1.9s cubic-bezier(.2,.9,.2,1) forwards}
+    @keyframes slash{0%{transform:scaleX(0);opacity:0}20%{transform:scaleX(1);opacity:1}100%{transform:scaleX(1);opacity:1}}
+    @keyframes sliceTop{0%{transform:translateY(0)}40%{transform:translateY(-6px)}100%{transform:translateY(-58px);opacity:0}}
+    @keyframes sliceBottom{0%{transform:translateY(0)}40%{transform:translateY(6px)}100%{transform:translateY(58px);opacity:0}}
+    @keyframes appear{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:translateY(0)}}
+    @keyframes leafFall{ to{ transform: translate3d(var(--dx,120px), var(--dy,120vh), 0) rotate(var(--rot,720deg)); opacity:0 } }
+
+    @media (prefers-reduced-motion: reduce){ *{animation:none!important;transition:none!important} }
+  </style>
+</head>
+<body>
+  <div class="bg-grid" aria-hidden="true"></div>
+  <header>
+    <div class="logo"><span class="glow">⟪ LUGIA ⟫</span> Showcase</div>
+  </header>
+
+  <main>
+    <div class="left">
+      <div class="hero">
+        <div class="tag">MY works</div>
+
+        <div class="cut-text" aria-hidden="true">
+          <div class="full">LUGIA</div>
+          <div class="slice top">A ordinary Scripter</div>
+          <div class="slice bottom">A ordinary Scripter</div>
+          <div class="slash" aria-hidden="true"></div>
+        </div>
+
+        <div class="replacement">A trustworthy scripter</div>
+
+        <p class="sub">Made by Lugia. These short clips show real systems I built and tested myself — interface, NPCs, admin tools, a reliable hatching system and a tidy inventory. Click any tile to watch the demo.</p>
+
+        <div class="grid" id="grid" aria-live="polite" aria-label="Showcase videos"></div>
+      </div>
+    </div>
+
+    <div class="right">
+      <div class="tree-wrap">
+        <svg class="tree" viewBox="0 0 300 500" xmlns="http://www.w3.org/2000/svg" role="img" aria-hidden="true">
+          <g fill="none" stroke="#ffffff" stroke-width="3" stroke-linecap="round">
+            <path d="M150 480 C150 410 140 360 130 330 C120 300 80 250 100 210 C120 170 160 170 170 140 C180 110 200 90 210 70" stroke-width="4" opacity=".9"/>
+            <path d="M150 480 C150 410 160 360 170 330 C180 300 220 250 200 210 C180 170 140 170 130 140 C120 110 100 90 90 70" stroke-width="4" opacity=".9"/>
+            <circle cx="150" cy="80" r="70" fill="#000" opacity="0.85"/>
+            <circle cx="210" cy="120" r="48" fill="#000" opacity="0.7"/>
+            <circle cx="90" cy="120" r="48" fill="#000" opacity="0.7"/>
+          </g>
+        </svg>
+        <div class="leaves" id="leaves"></div>
+      </div>
+    </div>
+  </main>
+
+  <div class="overlay" id="overlay" aria-hidden="true">
+    <div class="player" role="dialog" aria-label="Video player">
+      <div class="media-wrap">
+        <video id="playerVideo" controls playsinline></video>
+        <img id="playerImage" alt="screenshot" style="display:none" />
+      </div>
+      <div class="bar">
+        <div class="pill" id="backBtn">⟵ Back</div>
+        <div class="pill" id="playerTitle">Loading…</div>
+        <div style="flex:1"></div>
+        <div class="pill" id="muteToggle">Mute</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="music-toggle" id="musicToggle" title="Music">🔈</div>
+  <footer id="footerText">LUGIA/LUMINOUS</footer>
+
+  <audio id="bgm" src="Warriyo, Laura Brehm - Mortals (Slowed) [NCS Release].mp3" loop preload="auto"></audio>
+
+  <script>
+    // ordered files (user-provided)
+    const fileMap = [
+      {src: 'Roblox-2025-08-25T13_31_34.454Z (1) (1).mp4', label: 'NPC'},
+      {src: 'Screen Recording 2025-08-18 080949 (1).mp4', label: 'VIP Tag (Chat)'},
+      {src: 'Screen_Recording_2025-08-27_184500 (2).mp4', label: 'Inventory'},
+      {src: 'Screen_Recording_2025-08-30_195352.mp4', label: 'Interface'},
+      {src: 'Screenshot 2025-08-26 152034.png', label: 'Admin Commands'},
+      {src: 'comeplete work showcase (1) (2).mp4', label: 'Hatching System'}
+    ];
+
+    const fallbackPoster = 'Screenshot 2025-08-26 152034.png';
+    const grid = document.getElementById('grid');
+    const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const isTouch = ('ontouchstart' in window) || navigator.maxTouchPoints > 0;
+
+    // make file path safe for URLs (encode filename)
+    const safeUrl = (name)=> './' + encodeURIComponent(name);
+
+    // queue for thumbnail extraction (one at a time to avoid CPU spikes)
+    const thumbQueue = [];
+    let processingThumbs = false;
+    async function processThumbQueue(){
+      if(processingThumbs) return; processingThumbs = true;
+      while(thumbQueue.length){
+        const {src,imgEl} = thumbQueue.shift();
+        try{
+          const data = await extractFrameAsDataURL(safeUrl(src));
+          if(data) imgEl.src = data;
+        }catch(e){ /* leave fallback */ }
+        await new Promise(r=>setTimeout(r,120)); // tiny pause between frames
+      }
+      processingThumbs = false;
+    }
+
+    // extract 1 frame (as dataURL) from video URL
+    function extractFrameAsDataURL(src){
+      return new Promise((resolve,reject)=>{
+        try{
+          const v = document.createElement('video');
+          v.crossOrigin = 'anonymous';
+          v.preload = 'metadata'; v.muted = true; v.playsInline = true; v.src = src;
+          const cleanup = ()=>{ v.src = ''; v.load(); };
+          // when metadata is loaded, seek to a frame (0.6s or halfway)
+          v.addEventListener('loadedmetadata', ()=>{
+            const seekTo = Math.min(0.6, Math.max(0.05, v.duration/6));
+            const onSeek = ()=>{
+              try{
+                const canvas = document.createElement('canvas');
+                canvas.width = v.videoWidth; canvas.height = v.videoHeight;
+                const ctx = canvas.getContext('2d');
+                ctx.drawImage(v,0,0,canvas.width,canvas.height);
+                const data = canvas.toDataURL('image/jpeg', 0.75);
+                cleanup(); resolve(data);
+              }catch(err){ cleanup(); reject(err); }
+            };
+            v.currentTime = seekTo;
+            v.addEventListener('seeked', onSeek, {once:true});
+          }, {once:true});
+          v.addEventListener('error', (e)=>{ cleanup(); reject(e); }, {once:true});
+          // small safety timeout
+          setTimeout(()=>{ /* if nothing happened, reject silently */ }, 8000);
+        }catch(err){ reject(err); }
+      });
+    }
+
+    // build grid with img placeholders; queue thumbnail generation for videos
+    fileMap.forEach((item,i)=>{
+      const card = document.createElement('div'); card.className='card';
+      const thumb = document.createElement('div'); thumb.className='thumb';
+      const meta = document.createElement('div'); meta.className='meta';
+
+      const img = document.createElement('img'); img.alt = item.label + ' thumbnail';
+      // default fallback
+      img.src = fallbackPoster;
+
+      // if file is an image, just use it directly
+      if(/\.(png|jpe?g|gif)$/i.test(item.src)){
+        img.src = safeUrl(item.src);
+      } else {
+        // for non-touch & not reduced-motion & desktop, try to extract thumbnail from file
+        if(!isTouch && !prefersReducedMotion && window.innerWidth >= 720){
+          // queue up thumbnail generation
+          thumbQueue.push({src: item.src, imgEl: img});
+        }
+      }
+
+      thumb.appendChild(img);
+      const label = document.createElement('div'); label.className='label'; label.textContent = item.label;
+      const idx = document.createElement('div'); idx.className='idx'; idx.textContent = (i+1).toString();
+      meta.appendChild(label); meta.appendChild(idx);
+
+      card.appendChild(thumb); card.appendChild(meta);
+      card.addEventListener('click', ()=> openPlayer(item));
+      grid.appendChild(card);
+    });
+
+    // start processing thumbnail queue after short delay so layout isn't blocked
+    setTimeout(()=> processThumbQueue(), 400);
+
+    // slice intro
+    document.body.classList.add('animate'); setTimeout(()=>document.body.classList.add('show-replace'),2200);
+
+    // player/modal controls
+    const overlay = document.getElementById('overlay');
+    const playerVideo = document.getElementById('playerVideo');
+    const playerImage = document.getElementById('playerImage');
+    const playerTitle = document.getElementById('playerTitle');
+    const backBtn = document.getElementById('backBtn');
+    const bgm = document.getElementById('bgm');
+    const musicToggle = document.getElementById('musicToggle');
+    const muteToggle = document.getElementById('muteToggle');
+
+    // background music autoplay attempt
+    bgm.volume = 0.18;
+    window.addEventListener('DOMContentLoaded', async ()=>{
+      try{ await bgm.play(); musicToggle.textContent='🔊'; musicToggle.title='Click to mute background music'; }
+      catch(e){ musicToggle.textContent='🔈'; musicToggle.title='Enable background music'; }
+    });
+
+    musicToggle.addEventListener('click', async ()=>{
+      if(bgm.paused){ try{ await bgm.play(); musicToggle.textContent='🔊'; musicToggle.title='Click to mute background music'; }catch(e){ musicToggle.textContent='🔈'; musicToggle.title='Autoplay blocked — interact with page then tap'; }}
+      else{ bgm.pause(); musicToggle.textContent='🔈'; musicToggle.title='Enable background music'; }
+    });
+
+    let bgmWasPlaying = false;
+    function openPlayer(item){
+      playerTitle.textContent = item.label;
+      bgmWasPlaying = !bgm.paused && !bgm.ended; if(bgmWasPlaying) bgm.pause();
+      overlay.classList.add('open'); overlay.setAttribute('aria-hidden','false');
+
+      if(/\.(png|jpe?g|gif)$/i.test(item.src)){
+        playerVideo.style.display='none'; playerVideo.pause();
+        playerImage.style.display='block'; playerImage.src = safeUrl(item.src);
+      } else {
+        playerImage.style.display='none'; playerVideo.style.display='block';
+        playerVideo.src = safeUrl(item.src); playerVideo.currentTime = 0; playerVideo.play().catch(()=>{});
+      }
+
+      document.documentElement.style.overflow='hidden'; document.body.style.overflow='hidden';
+    }
+
+    function closePlayer(){
+      overlay.classList.remove('open'); overlay.setAttribute('aria-hidden','true');
+      try{ playerVideo.pause(); }catch(e){}
+      playerVideo.removeAttribute('src'); playerVideo.load(); playerImage.removeAttribute('src'); playerImage.style.display='none';
+      document.documentElement.style.overflow=''; document.body.style.overflow='';
+      if(bgmWasPlaying && bgm.paused) { bgm.play().catch(()=>{}); }
+    }
+
+    backBtn.addEventListener('click', closePlayer);
+    overlay.addEventListener('click', (e)=>{ if(e.target===overlay) closePlayer(); });
+    document.addEventListener('keydown', (e)=>{ if(e.key==='Escape') closePlayer(); });
+
+    // leafs (throttled)
+    const leavesRoot = document.getElementById('leaves');
+    const MAX_LEAVES = 16;
+    function spawnLeaf(){ if(leavesRoot.children.length>=MAX_LEAVES) return; const leaf=document.createElement('div'); leaf.className='leaf'; const size=8+Math.random()*18; leaf.style.width=size+'px'; leaf.style.height=(size*0.6)+'px'; const treeStartX = Math.max(window.innerWidth-420, window.innerWidth*0.6); const startLeft = treeStartX + Math.random()*(Math.min(320, window.innerWidth*0.3)); leaf.style.left=startLeft+'px'; leaf.style.top=(-20-Math.random()*40)+'px'; leaf.style.opacity=(0.6+Math.random()*0.4).toFixed(2); leaf.style.borderRadius=(size*0.4)+'px'; leaf.style.background=Math.random()>0.5? '#fff':'#e6e6e6'; const dx=(Math.random()*160-80)+'px'; const dy=(window.innerHeight+140)+'px'; const rot=(360+Math.random()*720)+'deg'; const dur=Math.floor(4200+Math.random()*5000); leaf.style.setProperty('--dx',dx); leaf.style.setProperty('--dy',dy); leaf.style.setProperty('--rot',rot); leaf.style.animation=`leafFall ${dur}ms linear forwards`; leavesRoot.appendChild(leaf); leaf.addEventListener('animationend',()=>{ try{ leavesRoot.removeChild(leaf);}catch(e){} }); }
+    let leafTimer=setInterval(()=>{ const burst = 1 + Math.floor(Math.random()*2); for(let i=0;i<burst;i++) setTimeout(spawnLeaf, i*120 + Math.random()*240); }, 1000);
+    window.addEventListener('resize',()=>{ clearInterval(leafTimer); leafTimer=setInterval(()=>{ const burst=1; setTimeout(spawnLeaf, Math.random()*400); },1200); setTimeout(()=>{ clearInterval(leafTimer); leafTimer=setInterval(()=>{ const burst=1 + Math.floor(Math.random()*2); for(let i=0;i<burst;i++) setTimeout(spawnLeaf, i*120 + Math.random()*240); },1000); },700); });
+
+    // footer text set
+    document.getElementById('footerText').textContent = 'LUGIA/LUMINOUS';
+  </script>
+</body>
+</html>
